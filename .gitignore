@@ -1,0 +1,5 @@
+.idea
+web
+composer.lock
+vendor
+.ddev

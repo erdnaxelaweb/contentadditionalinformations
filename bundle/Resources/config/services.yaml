@@ -1,0 +1,25 @@
+services:
+    ErdnaxelaWeb\ContentAdditionalInformations\Persistence\Gateway\DoctrineDatabase:
+        arguments:
+            $connection: '@ibexa.persistence.connection'
+
+    ErdnaxelaWeb\ContentAdditionalInformations\Persistence\HandlerInterface: '@ErdnaxelaWeb\ContentAdditionalInformations\Cache\Handler'
+
+    ErdnaxelaWeb\ContentAdditionalInformations\Persistence\Handler:
+        arguments:
+            $gateway: '@ErdnaxelaWeb\ContentAdditionalInformations\Persistence\Gateway\DoctrineDatabase'
+
+    ErdnaxelaWeb\ContentAdditionalInformations\Cache\Handler:
+        parent: Ibexa\Core\Persistence\Cache\AbstractInMemoryHandler
+        calls:
+            - ['setInnerHandler', ['@ErdnaxelaWeb\ContentAdditionalInformations\Persistence\Handler']]
+
+    ErdnaxelaWeb\ContentAdditionalInformations\Service\ContentAdditionalInformationsService:
+        arguments:
+            $handler: '@ErdnaxelaWeb\ContentAdditionalInformations\Cache\Handler'
+
+    ErdnaxelaWeb\ContentAdditionalInformations\Event\Subscriber\ContentEventSubscriber:
+        arguments:
+            $contentAdditionalInformationsService: '@ErdnaxelaWeb\ContentAdditionalInformations\Service\ContentAdditionalInformationsService'
+        tags:
+            - { name: kernel.event_subscriber }
